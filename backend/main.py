@@ -13,7 +13,7 @@ def receive_metadata(meta: VideoMetadata):
     """
     Endpoint appelé par le conteneur IA pour envoyer les métadonnées.
     """
-    # Optionnel : Vérifier si l'ID existe déjà pour éviter d'écraser ?
+    # Optionnel : Vérifier si l'ID existe déjà pour éviter d'écraser
     if meta.video_id in DB:
         # Vous pouvez choisir d'écraser (update) ou de lever une erreur
         pass 
@@ -33,7 +33,7 @@ def get_video(video_id: str):
     Endpoint appelé par le frontend pour récupérer les infos d'une vidéo.
     """
     if video_id not in DB:
-        # C'est ici le changement majeur : on renvoie une vraie erreur 404
+        # on renvoie une vraie erreur 404
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Video not found"
