@@ -1,6 +1,0 @@
-ffmpeg-python
-watchdog
-openai-whisper
-ultralytics
-requests
-numpy
