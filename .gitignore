@@ -1,0 +1,15 @@
+# Fichiers Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Données Vidéo (Ne pas upload sur Git !)
+data/00_input/*
+data/01_working/*
+data/02_metadata/*
+data/final/*
+!data/**/.gitkeep
+
+# Docker
+.docker/
