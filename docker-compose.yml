@@ -1,0 +1,94 @@
+version: "3.8"
+
+services:
+  # Service 1 : Downscaler
+  dowscale:
+    image: loyick/vidp-base:v1
+    # On suppose que le script s'appelle main.py ici aussi
+    command: python main.py
+    volumes:
+      - ./data/00_input:/mnt/data/input
+      - ./data/01_working:/mnt/data/processed
+      # ⚠️ Assure-toi que le dossier local s'appelle bien "dowscale" (ou change le nom ici)
+      - ./downscaler:/app
+      # Si tes scripts utilisent le dossier 'common', décommente la ligne ci-dessous :
+      # - ./common:/app/common
+
+  # Service 2 : Detection Langue
+  detectlang:
+    image: loyick/vidp-lang:v1
+    # Si le Dockerfile de l'image lance déjà main.py, pas besoin de command. 
+    command: python main.py
+    volumes:
+      - ./data/01_working:/mnt/data/input
+      - ./data/02_metadata:/mnt/data/processed
+      - ./data/cache:/root/.cache
+      # ⚠️ Assure-toi que le dossier local s'appelle bien "detectlang"
+      - ./lang-ident:/app 
+
+  # Service 3 : Sous-titres
+  subtitles:
+    image: loyick/vidp-subs:v1
+    # On lance main.py
+    command: python main.py
+    volumes:
+      - ./data/01_working:/mnt/data/input
+      - ./data/02_metadata:/mnt/data/metadata
+      - ./data/cache:/root/.cache
+      # ⚠️ Assure-toi que le dossier local s'appelle bien "subtitles"
+      - ./subtitler:/app 
+
+  # Service 4 : Animaux
+  animal-detect:
+    image: loyick/vidp-animals:v1
+    # CORRECTION MAJEURE : On lance main.py !
+    command: sh -c "pip install requests && python main.py"
+    depends_on:
+      - subtitles
+    environment:
+      - BACKEND_URL=http://51.20.183.135:8000/upload_result
+    volumes:
+      - ./data/01_working:/mnt/data/processed
+      - ./data/02_metadata:/mnt/data/metadata
+      - ./data/03_output:/mnt/data/final
+      - ./data/cache:/root/.cache
+      # On mappe ton dossier animal-detect (vu sur l'image) vers /app
+      - ./animal-detect:/app
+
+# --- MONITORING STACK ---
+
+  # 1. L'espion (Collecte les stats Docker)
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: vidp_cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    devices:
+      - /dev/kmsg
+
+  # 2. La base de données (Stocke les stats)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: vidp_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+
+  # 3. L'interface visuelle
+  grafana:
+    image: grafana/grafana:latest
+    container_name: vidp_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Mot de passe par défaut
+    depends_on:
+      - prometheus

@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 3s # On récupère les données toutes les 5 secondes
+
+scrape_configs:
+  # Job 1 : Prometheus se surveille lui-même
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Job 2 : cAdvisor (C'est lui qui surveille tes conteneurs VidP)
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']

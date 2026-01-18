@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-video-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vidp-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vidp-pipeline
+  template:
+    metadata:
+      labels:
+        app: vidp-pipeline
+    spec:
+      volumes:
+        - name: shared-storage
+          persistentVolumeClaim:
+            claimName: shared-video-storage
+        # On mappe aussi le dossier local de ton PC pour déposer les vidéos
+        - name: local-input
+          hostPath:
+            path: "D:\COURS_M2\VideoCloud" # Chemin Windows accessible par WSL
+            type: DirectoryOrCreate
+
+      containers:
+        # 1. DOWNSCALER
+        - name: downscaler
+          image: vidp-downscaler:v1
+          imagePullPolicy: Never # Utiliser l'image locale
+          volumeMounts:
+            - mountPath: /mnt/data
+              name: shared-storage
+            - mountPath: /mnt/data/input
+              name: local-input
+
+        # 2. LANG IDENT
+        - name: lang-ident
+          image: vidp-lang:v1
+          imagePullPolicy: Never
+          volumeMounts:
+            - mountPath: /mnt/data
+              name: shared-storage
+
+        # 3. SUBTITLER
+        - name: subtitler
+          image: vidp-subs:v1
+          imagePullPolicy: Never
+          volumeMounts:
+            - mountPath: /mnt/data
+              name: shared-storage
+
+        # 4. ANIMAL DETECT
+        - name: animal-detect
+          image: vidp-animals:v1
+          imagePullPolicy: Never
+          volumeMounts:
+            - mountPath: /mnt/data
+              name: shared-storage
+          env:
+        - name: CLOUD_ENDPOINT
+          value: "http://REMPLACE_PAR_IP_DE_M1/api/upload"
