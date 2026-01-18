@@ -1,0 +1,30 @@
+# --- Gestion de version (Inutile dans l'image) ---
+.git
+.gitignore
+.dockerignore
+README.md
+
+# --- Fichiers temporaires Python (Pollution) ---
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+
+# --- IDE et éditeurs (Bruit) ---
+.vscode
+.idea
+*.swp
+
+# --- LES DONNÉES LOURDES (CRUCIAL !) ---
+# On ne veut SURTOUT PAS copier les vidéos ou les modèles dans l'image.
+# On utilisera des VOLUMES pour y accéder.
+data/
+cache/
+videos/
+
+# --- Logs locaux ---
+*.log
