@@ -86,3 +86,31 @@ Phase 3 : Validation du Résultat (Cloud)
 Une fois le log VIDÉO UPLOADÉE apparu dans le terminal :
 
 Ouvrez le frontend Cloud (AWS) : http://51.20.183.135:8000 (ou votre IP actuelle).
+
+### Partie Backend (Cloud - AWS EC2)
+Le backend est hébergé sur une instance AWS EC2 (Ubuntu). Il joue le rôle de serveur centralisateur : il réceptionne les données envoyées par les conteneurs Docker locaux, stocke les fichiers et sert l'interface de visualisation.
+
+📂 Structure des Dossiers (Sur le serveur)
+L'application se trouve dans ~/backend/cloud_backend/. Voici l'organisation des fichiers :
+
+Plaintext
+
+cloud_backend/
+├── main.py                  # 🧠 Le Cerveau : API FastAPI qui gère les routes et la logique.
+├── index.html               # 🎨 Le Visage : Interface Web (Dashboard type Netflix).
+├── simulated_dynamodb.json  # 💾 La Mémoire : Base de données JSON légère (NoSQL simulé).
+├── static/                  # 📦 Le Stockage : Dossier où sont sauvegardées les vidéos .mp4 reçues.
+├── venv/                    # Environnement virtuel Python.
+└── requirements.txt         # Dépendances (fastapi, uvicorn, python-multipart).
+🛠️ Technologies & Rôles
+Framework : FastAPI (Python) - Choisi pour sa rapidité et sa gestion native de l'asynchrone.
+
+Serveur ASGI : Uvicorn.
+
+## Fonctionnalités Clés :
+
+Réception de Données : Accepte les uploads de fichiers lourds (Vidéos) et de métadonnées (JSON) via HTTP POST.
+
+Persistance : Maintient un historique des traitements dans simulated_dynamodb.json sans avoir besoin d'une base de données complexe.
+
+Streaming : Rend les vidéos accessibles en streaming via le dossier monté /static.
