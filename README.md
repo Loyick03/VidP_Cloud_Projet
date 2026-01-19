@@ -93,24 +93,31 @@ Le backend est hébergé sur une instance AWS EC2 (Ubuntu). Il joue le rôle de 
 📂 Structure des Dossiers (Sur le serveur)
 L'application se trouve dans ~/backend/cloud_backend/. Voici l'organisation des fichiers :
 
-Plaintext
-
-cloud_backend/
-├── main.py                  # 🧠 Le Cerveau : API FastAPI qui gère les routes et la logique.
-├── index.html               # 🎨 Le Visage : Interface Web (Dashboard type Netflix).
-├── simulated_dynamodb.json  # 💾 La Mémoire : Base de données JSON légère (NoSQL simulé).
-├── static/                  # 📦 Le Stockage : Dossier où sont sauvegardées les vidéos .mp4 reçues.
-├── venv/                    # Environnement virtuel Python.
-└── requirements.txt         # Dépendances (fastapi, uvicorn, python-multipart).
-🛠️ Technologies & Rôles
+#### 🛠️ Technologies & Rôles
 Framework : FastAPI (Python) - Choisi pour sa rapidité et sa gestion native de l'asynchrone.
 
 Serveur ASGI : Uvicorn.
 
-## Fonctionnalités Clés :
+#### Fonctionnalités Clés :
 
 Réception de Données : Accepte les uploads de fichiers lourds (Vidéos) et de métadonnées (JSON) via HTTP POST.
 
 Persistance : Maintient un historique des traitements dans simulated_dynamodb.json sans avoir besoin d'une base de données complexe.
 
 Streaming : Rend les vidéos accessibles en streaming via le dossier monté /static.
+
+#### Commandes de Déploiement
+Bash
+
+# 1. Connexion SSH
+`ssh -i "VidP-key.pem" ubuntu@51.20.183.135`
+
+# 2. Installation des dépendances
+`sudo apt update && sudo apt install python3-pip python3-venv -y
+mkdir -p backend/cloud_backend && cd backend/cloud_backend
+python3 -m venv venv
+source venv/bin/activate
+pip install fastapi uvicorn python-multipart`
+
+# 3. Lancement du serveur (Port 8000 ouvert dans le Security Group AWS)
+`uvicorn main:app --host 0.0.0.0 --port 8000`
