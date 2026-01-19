@@ -30,8 +30,7 @@ Accès Internet (pour l'envoi vers le Cloud AWS).
 Récupérez le projet et placez-vous à la racine :
 
 `bash
-git clone https://github.com/VOTRE_REPO/vidp-project.git
-cd vidp-project`
+ git clone https://github.com/Loyick03/VidP_Cloud_Projet`
 
 2. Création de l'environnement de données
 Le projet utilise des volumes locaux pour simuler le passage de données entre conteneurs. Assurez-vous que l'arborescence est propre :
@@ -113,11 +112,11 @@ Bash
 `ssh -i "VidP-key.pem" ubuntu@51.20.183.135`
 
 # 2. Installation des dépendances
-`sudo apt update && sudo apt install python3-pip python3-venv -y
-mkdir -p backend/cloud_backend && cd backend/cloud_backend
-python3 -m venv venv
-source venv/bin/activate
-pip install fastapi uvicorn python-multipart`
+`sudo apt update && sudo apt install python3-pip python3-venv -y`
+`mkdir -p backend/cloud_backend && cd backend/cloud_backend`
+`python3 -m venv venv`
+`source venv/bin/activate`
+`pip install fastapi uvicorn python-multipart`
 
 # 3. Lancement du serveur (Port 8000 ouvert dans le Security Group AWS)
 `uvicorn main:app --host 0.0.0.0 --port 8000`
