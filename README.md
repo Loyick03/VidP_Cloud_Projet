@@ -86,13 +86,3 @@ Phase 3 : Validation du Résultat (Cloud)
 Une fois le log VIDÉO UPLOADÉE apparu dans le terminal :
 
 Ouvrez le frontend Cloud (AWS) : http://51.20.183.135:8000 (ou votre IP actuelle).
-
-Vérification 1 : La vidéo doit apparaître dans la liste "Historique" à gauche.
-
-Vérification 2 : Cliquez sur la vidéo.
-
-La vidéo se lance-t-elle ?
-
-Les sous-titres sont-ils affichés ?
-
-Les tags (ex: "Dog", "Cat") sont-ils présents dans les infos ?
